@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Dimensions, Text, TouchableOpacity, View } from "react-native";
+import {
+  Dimensions,
+  Modal,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import AuthContainer from "../ui/AuthContainer";
 import DateSelector from "../ui/DateSelector";
 import InputSpin from "../ui/InputSpin";
@@ -11,9 +18,10 @@ const RenderExplorer = () => {
   //useState() para gerenciar e alterar os estados
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
-  const [qntGuests, setQntGuests] = useState("");
-
+  const [qntGuests, setQntGuests] = useState<number>(1);
   const [calendar, setCalendar] = useState<"checkin" | "checkout" | null>(null);
+  const closeCalendar = () => setCalendar(null);
+
   return (
     <AuthContainer>
       {/*children */}
@@ -37,15 +45,6 @@ const RenderExplorer = () => {
             </View>{" "}
             {/* Fecha aqui */}
           </TouchableOpacity>
-          {/* <DateSelector /> */}
-          {calendar === "checkin" && (
-            <DateSelector
-              onSelectDate={(date) => {
-                setCheckIn(date);
-                setCalendar(null);
-              }}
-            />
-          )}
         </View>{" "}
         {/*View de check-in fecha aqui */}
         <View style={{ display: "flex", flexDirection: "column" }}>
@@ -65,24 +64,61 @@ const RenderExplorer = () => {
             </View>{" "}
             {/* Fecha aqui */}
           </TouchableOpacity>
-          {/* <DateSelector /> */}
-          {calendar === "checkout" && (
-            <DateSelector
-              onSelectDate={(date) => {
-                setCheckOut(date);
-                setCalendar(null);
-              }}
-            />
-          )}
         </View>
         {/*View do check-out que fecha aqui */}
+        {/* Modal para fechar calendário ao clicar fora */}
+        <Modal
+          transparent
+          animationType="fade"
+          visible={calendar !== null}
+          onRequestClose={closeCalendar}
+        >
+          {/* Backdrop: qualquer clique aqui fora, fecha */}
+          <Pressable
+            style={{
+              flex: 1,
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(0,0,0, 0.29)",
+            }}
+            onPress={closeCalendar}
+          >
+            {/* Área do calendário que, ao clicar, não o fecha */}
+            <Pressable onPress={() => {}}>
+              {/* <DateSelector /> */}
+              {calendar === "checkin" && (
+                <DateSelector
+                  onSelectDate={(date) => {
+                    setCheckIn(date);
+                    closeCalendar();
+                  }}
+                />
+              )}
+              {/* <DateSelector /> */}
+              {calendar === "checkout" && (
+                <DateSelector
+                  onSelectDate={(date) => {
+                    setCheckOut(date);
+                    closeCalendar();
+                  }}
+                />
+              )}
+            </Pressable>
+          </Pressable>
+        </Modal>
         {/* InputSpin */}
         <View>
           <Text style={global.label}>Quantidade de hóspedes</Text>
           <InputSpin
+            guests={qntGuests}
             onSelectSpin={(guests) => {
               setQntGuests(guests);
             }}
+            minGuests={1}
+            maxGuests={6}
+            step={1}
+            colorMin={"#420350ff"}
+            colorMax={"#420350ff"}
           />
         </View>
       </View>

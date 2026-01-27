@@ -3,7 +3,7 @@ import DatePicker, { getToday } from "react-native-modern-datepicker";
 type Props = {
   onSelectDate: (date: string) => void;
 };
-const DateSelector = ({onSelectDate} : Props) => {
+const DateSelector = ({ onSelectDate }: Props) => {
   const { width, height } = Dimensions.get("window"); //Componente para dimensionar largura e altura (responsividade)
   const today = getToday();
   return (
@@ -21,7 +21,7 @@ const DateSelector = ({onSelectDate} : Props) => {
           textFontSize: 14, //Tamanho da fonte (dias da semana e número -> data)
           textHeaderFontSize: 15, //Tamanho da fonte (mês)
         }}
-        style={{ borderRadius: 15, width: width * 0.69, height: "auto", position: "absolute", zIndex: 1}}
+        style={{ borderRadius: 15, width: width * 0.69, height: "auto" }}
         isGregorian={true}
         minimumDate={today}
         onSelectedChange={(date) => {
