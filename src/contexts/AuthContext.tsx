@@ -2,6 +2,17 @@ import { API_URL } from "@/constants/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
+type CartReservations = {
+  roomId: number;
+  nome: string;
+  qtd_cama_casal: number;
+  qtd_cama_solteiro: number;
+  preco: number;
+  dataInicio: string;
+  dataFim: string;
+  quantidade: number;
+};
+
 type AuthContextProps = {
   token: string | null;
   isLoading: boolean;
@@ -12,6 +23,12 @@ type AuthContextProps = {
     dataFim: string,
     quantidade: number,
   ) => Promise<any[]>;
+
+  cartReservations: CartReservations[];
+  addReservationToCart: (resevation: CartReservations) => void;
+  //Segunda: Remover um item específico do carrinho
+  clearCart: () => void;
+  //Segunda: criar a ordem de pedido com as reservas => forma de pagamento e adicional
 };
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -19,6 +36,10 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [cartReservations, setCartReservations] = useState<CartReservations[]>(
+    [],
+  );
+
   // Carregar token ao abrir o app
   useEffect(() => {
     (async () => {
@@ -75,8 +96,21 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return await res.json();
   }
 
+  const addReservationToCart = (reservation: CartReservations) => {};
+
+  const clearCart = () => {};
+
   const value = useMemo(
-    () => ({ token, isLoading, signIn, signOut, searchRoom }),
+    () => ({
+      token,
+      isLoading,
+      signIn,
+      signOut,
+      searchRoom,
+      cartReservations,
+      addReservationToCart,
+      clearCart,
+    }),
     [token, isLoading],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -18,7 +18,7 @@ import RoomCard from "../ui/RoomCard";
 import TextField from "../ui/TextField";
 import { global } from "../ui/styles";
 const RenderExplorer = () => {
-  const { searchRoom } = useAuth();
+  const { searchRoom, addReservationToCart } = useAuth();
   const { width, height } = Dimensions.get("window");
   //useState() para gerenciar e alterar os estados
   const [checkIn, setCheckIn] = useState("");
@@ -49,6 +49,20 @@ const RenderExplorer = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAddToCart = (room: any) => {
+    addReservationToCart({
+      roomId: room.id,
+      nome: room.nome,
+      qtd_cama_casal: room.qtd_cama_casal,
+      qtd_cama_solteiro: room.qtd_cama_solteiro,
+      preco: Number(room.preco),
+      dataInicio: checkIn,
+      dataFim: checkOut,
+      quantidade: qntGuests,
+    });
+    Alert.alert("SUCESSO!", "Quarto adicionada ao carrinho!");
   };
 
   return (
@@ -197,6 +211,7 @@ const RenderExplorer = () => {
                   text: `${room.qtd_cama_casal} cama(s) casal \n${room.qtd_cama_solteiro} cama(s) solteiro `,
                   price: Number(room.preco),
                 }}
+                onPressReserve={() => handleAddToCart(room)}
               />
             ))}
           </ScrollView>
