@@ -179,17 +179,23 @@ const RenderExplorer = () => {
           >
             {availableRooms.map((room) => (
               <RoomCard
-                image={require("../../../assets/images/quarto.jpg")}
+                key={room.id}
+                image={
+                  room.fotos?.length > 0
+                    ? { uri: room.fotos[0].url }
+                    : require("../../../assets/images/quarto.jpg")
+                }
                 /* image={{uri: "https://"}} */
-                label="Apartamento"
+
+                label={room.nome}
                 icon={{
                   lib: "FontAwesome5",
                   name: "bed",
                 }}
                 description={{
                   title: "Descrição do quarto",
-                  text: "1 cama de casal\n2 camas de solteiro",
-                  price: 180.9,
+                  text: `${room.qtd_cama_casal} cama(s) casal \n${room.qtd_cama_solteiro} cama(s) solteiro `,
+                  price: Number(room.preco),
                 }}
               />
             ))}
