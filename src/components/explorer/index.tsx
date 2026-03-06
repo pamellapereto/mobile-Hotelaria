@@ -6,6 +6,7 @@ import {
   Dimensions,
   Modal,
   Pressable,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
@@ -159,20 +160,53 @@ const RenderExplorer = () => {
       </View>
 
       {/*Renderização dos quartos */}
-      <RoomCard
-        image={require("../../../assets/images/quarto.jpg")}
-        /* image={{uri: "https://"}} */
-        label="Apartamento"
-        icon={{
-          lib: "FontAwesome5",
-          name: "bed",
-        }}
-        description={{
-          title: "Descrição do quarto",
-          text: "1 cama de casal\n2 camas de solteiro",
-          price: 180.9,
-        }}
-      />
+
+      {availableRooms.length > 0 ? (
+        <View>
+          <Text
+            style={[
+              global.label,
+              { marginTop: height * 0.04, textAlign: "center" },
+            ]}
+          >
+            Opções encontradas:
+          </Text>
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={width * 0.07}
+          >
+            {availableRooms.map((room) => (
+              <RoomCard
+                image={require("../../../assets/images/quarto.jpg")}
+                /* image={{uri: "https://"}} */
+                label="Apartamento"
+                icon={{
+                  lib: "FontAwesome5",
+                  name: "bed",
+                }}
+                description={{
+                  title: "Descrição do quarto",
+                  text: "1 cama de casal\n2 camas de solteiro",
+                  price: 180.9,
+                }}
+              />
+            ))}
+          </ScrollView>
+        </View>
+      ) : (
+        <View>
+          <Text
+            style={[
+              global.label,
+              { marginTop: height * 0.04, textAlign: "center" },
+            ]}
+          >
+            Nenhuma opção disponível!
+          </Text>
+        </View>
+      )}
     </AuthContainer>
   );
 };
