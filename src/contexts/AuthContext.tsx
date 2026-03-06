@@ -7,6 +7,11 @@ type AuthContextProps = {
   isLoading: boolean;
   signIn: (email: string, senha: string) => Promise<void>;
   signOut: () => Promise<void>;
+  searchRoom: (
+    inicio: string,
+    fim: string,
+    qtdPessoas: number,
+  ) => Promise<any[]>;
 };
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -50,8 +55,24 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(null);
   }
 
+  async function searchRoom(inicio: string, fim: string, qtdPessoas: number) {
+    const res = await fetch(`${API_URL}/quartosDisponiveis`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ inicio, fim, qtdPessoas }),
+    });
+
+    if (!res.ok) {
+      const error = await res.json().catch(() => null);
+      throw new Error(
+        error?.erro || error?.mensagem || "Erro ao buscar quartos",
+      );
+    }
+    return await res.json();
+  }
+
   const value = useMemo(
-    () => ({ token, isLoading, signIn, signOut }),
+    () => ({ token, isLoading, signIn, signOut, searchRoom }),
     [token, isLoading],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
