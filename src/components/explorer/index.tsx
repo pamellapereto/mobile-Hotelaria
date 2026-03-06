@@ -1,5 +1,8 @@
+import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
   Dimensions,
   Modal,
   Pressable,
@@ -14,13 +17,38 @@ import RoomCard from "../ui/RoomCard";
 import TextField from "../ui/TextField";
 import { global } from "../ui/styles";
 const RenderExplorer = () => {
+  const { searchRoom } = useAuth();
   const { width, height } = Dimensions.get("window");
   //useState() para gerenciar e alterar os estados
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [qntGuests, setQntGuests] = useState<number>(1);
   const [calendar, setCalendar] = useState<"checkin" | "checkout" | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [availableRooms, setAvailableRooms] = useState<any[]>([]);
   const closeCalendar = () => setCalendar(null);
+
+  const handleSearch = async () => {
+    if (!checkIn || !checkOut) {
+      Alert.alert("ATENÇÃO!", "Selecione as datas de entrada e saída.");
+      return;
+    }
+    setLoading(true);
+    setAvailableRooms([]);
+
+    try {
+      const rooms = await searchRoom(checkIn, checkOut, qntGuests);
+      setAvailableRooms(rooms || []);
+      console.log(rooms);
+    } catch (error: any) {
+      if (!error?.message?.includes("encontrado")) {
+        Alert.alert("ERRO", "Ocorreu um problema ao buscar quartos.");
+      }
+      setAvailableRooms([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <AuthContainer>
@@ -121,7 +149,16 @@ const RenderExplorer = () => {
             colorMax={"#420350ff"}
           />
         </View>
+        <TouchableOpacity disabled={loading} onPress={handleSearch}>
+          {loading ? (
+            <ActivityIndicator size="small" color="#420350ff" />
+          ) : (
+            <Text>Consultar disponibilidade</Text>
+          )}
+        </TouchableOpacity>
       </View>
+
+      {/*Renderização dos quartos */}
       <RoomCard
         image={require("../../../assets/images/quarto.jpg")}
         /* image={{uri: "https://"}} */

@@ -8,9 +8,9 @@ type AuthContextProps = {
   signIn: (email: string, senha: string) => Promise<void>;
   signOut: () => Promise<void>;
   searchRoom: (
-    inicio: string,
-    fim: string,
-    qtdPessoas: number,
+    dataInicio: string,
+    dataFim: string,
+    quantidade: number,
   ) => Promise<any[]>;
 };
 
@@ -55,11 +55,15 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setToken(null);
   }
 
-  async function searchRoom(inicio: string, fim: string, qtdPessoas: number) {
+  async function searchRoom(
+    dataInicio: string,
+    dataFim: string,
+    quantidade: number,
+  ) {
     const res = await fetch(`${API_URL}/quartosDisponiveis`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ inicio, fim, qtdPessoas }),
+      body: JSON.stringify({ dataInicio, dataFim, quantidade }),
     });
 
     if (!res.ok) {
