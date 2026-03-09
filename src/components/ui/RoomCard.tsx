@@ -89,7 +89,7 @@ const RoomCard = ({
           style={[global.primaryButton, { paddingVertical: height * 0.007 }]}
           onPress={onPressReserve}
         >
-          <Text style={[global.label, { color: "#fff" }]}>Realizar Pedido</Text>
+          <Text style={[global.label, { color: "#fff" }]}>Incluir reserva</Text>
         </TouchableOpacity>
       </View>
     </View>

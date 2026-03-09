@@ -62,7 +62,8 @@ const RenderExplorer = () => {
       dataFim: checkOut,
       quantidade: qntGuests,
     });
-    Alert.alert("SUCESSO!", "Quarto adicionada ao carrinho!");
+
+    Alert.alert("SUCESSO!", "Quarto adicionado ao carrinho!");
   };
 
   return (
