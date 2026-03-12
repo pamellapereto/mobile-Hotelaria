@@ -28,8 +28,8 @@ type AuthContextProps = {
   addReservationToCart: (resevation: CartReservations) => void;
   removeReservationFromCart: (index: number) => void;
   clearCart: () => void;
-
-  //Segunda: criar a ordem de pedido com as reservas => forma de pagamento e adicional
+  /* idAdicional pode ser nulo no database, portanto não está sendo chamado no back-end!*/
+  createOrder: (pagamento: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -125,6 +125,43 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setCartReservations([]);
   };
 
+  const createOrder = async (pagamento: string) => {
+    if (!token) {
+      throw new Error("Usuário não autenticado");
+    }
+
+    if (cartReservations.length === 0) {
+      throw new Error("Carrinho está vazio!");
+    }
+
+    const quartos = cartReservations.map((item) => ({
+      id: item.roomId,
+      dataInicio: item.dataInicio,
+      dataFim: item.dataFim,
+    }));
+
+    const res = await fetch(`${API_URL}/reserva`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+
+      body: JSON.stringify({
+        pagamento,
+        quartos,
+      }),
+    });
+
+    const result = await res.json().catch(() => null);
+
+    if (!res.ok) {
+      throw new Error(result?.message || "Erro ao finalizar pedido");
+    }
+
+    clearCart();
+  };
+
   const value = useMemo(
     () => ({
       token,
@@ -134,9 +171,11 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       searchRoom,
       cartReservations,
       addReservationToCart,
+      removeReservationFromCart,
       clearCart,
+      createOrder,
     }),
-    [token, isLoading],
+    [token, isLoading, cartReservations],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

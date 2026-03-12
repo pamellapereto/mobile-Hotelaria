@@ -20,7 +20,6 @@ import { global } from "../ui/styles";
 const RenderExplorer = () => {
   const { searchRoom, addReservationToCart } = useAuth();
   const { width, height } = Dimensions.get("window");
-  //useState() para gerenciar e alterar os estados
   const [checkIn, setCheckIn] = useState("");
   const [checkOut, setCheckOut] = useState("");
   const [qntGuests, setQntGuests] = useState<number>(1);
@@ -70,15 +69,12 @@ const RenderExplorer = () => {
     <AuthContainer>
       {/*children */}
       <View style={{ display: "flex", justifyContent: "center" }}>
-        {" "}
         {/*Essa View vocês tinham e eu só estilizei*/}
         <View style={{ display: "flex", flexDirection: "column" }}>
-          {" "}
           {/*Criei esta nova View para check-in*/}
           {/* Input de checkIn para abrir calendário*/}
           <TouchableOpacity onPress={() => setCalendar("checkin")}>
             <View style={{ width: width * 0.8 }}>
-              {" "}
               {/* Nova view para dar largura ao TextField */}
               <TextField
                 label="Check-in"
@@ -86,18 +82,16 @@ const RenderExplorer = () => {
                 placeholder="Selecione a data"
                 value={checkIn}
               />
-            </View>{" "}
+            </View>
             {/* Fecha aqui */}
           </TouchableOpacity>
-        </View>{" "}
+        </View>
         {/*View de check-in fecha aqui */}
         <View style={{ display: "flex", flexDirection: "column" }}>
-          {" "}
           {/*Criei esta nova View para check-out*/}
           {/* Input de checkIn para abrir calendário*/}
           <TouchableOpacity onPress={() => setCalendar("checkout")}>
             <View style={{ width: width * 0.8 }}>
-              {" "}
               {/* Nova view para dar largura ao TextField */}
               <TextField
                 label="Check-out"
@@ -105,7 +99,7 @@ const RenderExplorer = () => {
                 placeholder="Selecione a data"
                 value={checkOut}
               />
-            </View>{" "}
+            </View>
             {/* Fecha aqui */}
           </TouchableOpacity>
         </View>
@@ -200,8 +194,6 @@ const RenderExplorer = () => {
                     ? { uri: room.fotos[0].url }
                     : require("../../../assets/images/quarto.jpg")
                 }
-                /* image={{uri: "https://"}} */
-
                 label={room.nome}
                 icon={{
                   lib: "FontAwesome5",
