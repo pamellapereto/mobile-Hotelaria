@@ -1,8 +1,8 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { FontAwesome5 } from "@expo/vector-icons";
-import { useLocalSearchParams } from "expo-router";
+import { FontAwesome5, MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import {
+  Alert,
   Dimensions,
   ScrollView,
   StyleSheet,
@@ -18,8 +18,22 @@ const RenderReservations = () => {
   const { cartReservations, removeReservationFromCart, createOrder } =
     useAuth();
 
-  const { checkIn, checkOut, guests } = useLocalSearchParams();
+  const calculoTotal = cartReservations.reduce(
+    (acc, item) => acc + Number(item.preco),
+    0,
+  );
 
+  const handleFinishOrder = async () => {
+    try {
+      await createOrder("Pix");
+      Alert.alert("Sucesso", "Pedido finalizado!");
+    } catch (error: any) {
+      Alert.alert(
+        "Erro",
+        error.message || "Não foi possível finalizar o pedido.",
+      );
+    }
+  };
   return (
     <AuthContainer
       title="Minhas Reservas"
@@ -60,44 +74,64 @@ const RenderReservations = () => {
           ) : (
             <View>
               {cartReservations.map((item, index) => (
-                <View style={styles.itemCard}>
-                  <View style={styles.cardHeader}>
-                    <FontAwesome5 name="bed" size={20} color="#07042b" />
-                    <Text style={styles.roomLabel}>Quarto Master</Text>
+                <View key={index} style={styles.itemCard}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <View style={styles.cardHeader}>
+                      <FontAwesome5 name="bed" size={20} color="#07042b" />
+                      <Text style={styles.roomLabel}>{item.nome}</Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => removeReservationFromCart(index)}
+                    >
+                      <MaterialCommunityIcons
+                        name="trash-can"
+                        color={"#8f0000"}
+                        size={20}
+                      />
+                    </TouchableOpacity>
                   </View>
-
                   <View style={styles.divider} />
 
                   {/* Informações que vieram da Explore */}
                   <View style={styles.infoGrid}>
                     <View style={styles.infoBox}>
                       <Text style={styles.miniLabel}>ENTRADA</Text>
-                      <Text style={styles.infoText}>
-                        {checkIn || "10/10/2026"}
-                      </Text>
+                      <Text style={styles.infoText}>{item.dataInicio}</Text>
                     </View>
                     <View style={styles.infoBox}>
                       <Text style={styles.miniLabel}>SAÍDA</Text>
-                      <Text style={styles.infoText}>
-                        {checkOut || "15/10/2026"}
-                      </Text>
+                      <Text style={styles.infoText}>{item.dataFim}</Text>
                     </View>
                     <View style={styles.infoBox}>
                       <Text style={styles.miniLabel}>HÓSPEDES</Text>
                       <Text style={styles.infoText}>
-                        {guests || "2"} Pessoas
+                        {item.quantidade} Pessoas
                       </Text>
                     </View>
                   </View>
-
                   <View style={styles.totalDivider} />
                   {/* Resumo de Valores */}
                   <View style={styles.priceCard}>
-                    <Text style={styles.sectionTitle}>Resumo do Valor</Text>
+                    <Text style={styles.sectionTitle}>Resumo do valor</Text>
 
-                    <View style={styles.priceRow}>
-                      <Text style={styles.priceLabel}>Diárias (5 noites)</Text>
-                      <Text style={styles.priceValue}>R$ 904,50</Text>
+                    <View style={[styles.priceRow, { alignItems: "center" }]}>
+                      <View>
+                        <Text style={styles.priceLabel}>
+                          Preço da diária: R$ {item.preco}
+                        </Text>
+                        <Text style={styles.priceLabel}>
+                          Quantidade de diárias: X
+                        </Text>
+                      </View>
+                      <View>
+                        <Text style={styles.priceValue}>Subtotal</Text>
+                        <Text style={styles.priceValue}>R$ X,xx</Text>
+                      </View>
                     </View>
                   </View>
                 </View>
@@ -112,13 +146,13 @@ const RenderReservations = () => {
                   }}
                 >
                   <Text style={styles.totalLabel}>Total</Text>
-                  <Text style={styles.totalPrice}>R$ 949,50</Text>
+                  <Text style={styles.totalPrice}>{calculoTotal}</Text>
                 </View>
               </View>
               <View style={styles.buttonArea}>
                 <TouchableOpacity
                   style={styles.confirmButton}
-                  onPress={() => console.log("Finalizar")}
+                  onPress={handleFinishOrder}
                 >
                   <Text style={styles.confirmButtonText}>
                     CONFIRMAR RESERVA
@@ -184,10 +218,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     color: "#07042b",
   },
-  priceCard: {
-    backgroundColor: "#F9FAFB",
-    borderRadius: 15,
-  },
+
   priceRow: {
     flexDirection: "row",
     justifyContent: "space-between",
